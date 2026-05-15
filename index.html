@@ -318,6 +318,10 @@
         <input type="text" id="cfgTt" placeholder="okumo.saborreal">
         <label>PIN de administrador</label>
         <input type="text" id="cfgPin" placeholder="1234" maxlength="4">
+        <div class="adm-sep"></div>
+        <label>Mensaje de WhatsApp al hacer un pedido</label>
+        <p class="adm-hint" style="margin-top:-4px">Usá <strong>{items}</strong> donde van los productos y <strong>{total}</strong> donde va el total.</p>
+        <textarea id="cfgWaMsg" rows="7" style="width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:13px;font-family:inherit;resize:vertical;line-height:1.5"></textarea>
         <button class="btn-adm-save" id="btnSaveConfig">💾 Guardar configuración</button>
         <div class="save-feedback hidden" id="configFeedback">✅ Guardado</div>
         <div class="adm-sep"></div>

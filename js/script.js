@@ -16,6 +16,7 @@ const DEFAULTS = {
   instagram:   'okumo.ar',
   tiktok:      'okumo.saborreal',
   pin:         '1234',
+  waMsgTemplate: '🔥 *PEDIDO OKUMO — SABOR REAL* 🔥\n\n📋 *Detalle:*\n\n{items}\n💰 *Total estimado: {total} ARS*\n\n📍 Indicá tu dirección y te confirmamos. ¡Gracias!',
   stats: { v1:"4.9★", l1:"Rating", v2:"+500", l2:"Pedidos", v3:"30'", l3:"Entrega" },
   categories: [
     { id:'milanesas',  label:'Milanesas',       emoji:'🍗' },
@@ -419,9 +420,10 @@ function closeCart() { document.getElementById('cartPanel')?.classList.remove('o
 /* ── WHATSAPP ORDER ── */
 function finalizeOrder() {
   if (!cart.length) return;
-  let msg = `🔥 *PEDIDO OKUMO — SABOR REAL* 🔥\n\n📋 *Detalle:*\n\n`;
-  cart.forEach(i => { msg += `• ${i.nombre} ×${i.qty} — ${fmt(i.precio * i.qty)}\n`; });
-  msg += `\n💰 *Total estimado: ${fmt(cartTotal())} ARS*\n\n📍 Indicá tu dirección y te confirmamos. ¡Gracias!`;
+  let items = '';
+  cart.forEach(i => { items += `• ${i.nombre} ×${i.qty} — ${fmt(i.precio * i.qty)}\n`; });
+  const tpl = (data.waMsgTemplate || DEFAULTS.waMsgTemplate);
+  const msg = tpl.replace('{items}', items).replace('{total}', fmt(cartTotal()));
   window.open(waLink(msg), '_blank');
 }
 
@@ -687,6 +689,7 @@ function fillAdminConfig() {
   s('cfgIg',  data.instagram || '');
   s('cfgTt',  data.tiktok    || '');
   s('cfgPin', data.pin       || '');
+  s('cfgWaMsg', data.waMsgTemplate || DEFAULTS.waMsgTemplate);
 }
 
 function saveConfig() {
@@ -711,6 +714,8 @@ function saveConfig() {
   data.instagram = rawIg.replace(/^https?:\/\/(www\.)?instagram\.com\//,'').replace(/\/$/,'');
   data.tiktok    = (g('cfgTt') || data.tiktok).replace(/^@/,'');
   if (g('cfgPin').length === 4) data.pin = g('cfgPin');
+  const waMsg = document.getElementById('cfgWaMsg')?.value || '';
+  if (waMsg.trim()) data.waMsgTemplate = waMsg;
   saveData(); applyData();
   const fb = document.getElementById('configFeedback');
   if (fb) { fb.classList.remove('hidden'); setTimeout(()=>fb.classList.add('hidden'), 2500); }
