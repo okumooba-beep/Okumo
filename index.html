@@ -327,9 +327,11 @@
         <div class="adm-sep"></div>
         <p class="adm-hint">💡 Para cambiar fotos e imágenes, usá el <strong>Modo Edición</strong>: hacé clic en cualquier imagen directamente desde la página.</p>
         <div class="adm-sep"></div>
-        <p class="adm-hint" style="color:#00b894;font-weight:600">📦 Exportar para Netlify</p>
-        <p class="adm-hint" style="color:var(--gray-2);margin-top:-8px">Cuando terminés de editar todo (fotos, menú, textos), usá este botón. Descarga un archivo <strong>data.js</strong> — guardalo en la carpeta <strong>okumo/js/</strong> reemplazando el que ya existe. Después subí la carpeta <strong>okumo</strong> a Netlify y listo.</p>
-        <button class="btn-adm-save" style="background:#00b894;width:100%;margin-top:4px" onclick="exportForNetlify()">📦 Exportar para Netlify</button>
+        <p class="adm-hint" style="color:#6f42c1;font-weight:600">🚀 Publicar en el sitio web</p>
+        <p class="adm-hint" style="color:var(--gray-2);margin-top:-8px">Pegá tu token de GitHub y hacé clic en el botón. El sitio se actualiza solo en 1-2 minutos, sin archivos ni comandos.</p>
+        <p class="adm-hint" style="color:var(--gray-2);margin-top:-4px">Token: <a href="https://github.com/settings/tokens/new?scopes=repo&description=OKUMO" target="_blank" style="color:#6f42c1">generalo acá</a> (seleccioná el permiso <strong>repo</strong>)</p>
+        <input type="password" id="cfgGhToken" placeholder="ghp_xxxxxxxxxxxxxxxx" style="width:100%;margin-bottom:6px">
+        <button id="btnPublish" class="btn-adm-save" style="background:#6f42c1;width:100%;margin-top:0" onclick="publishToGitHub()">🚀 Guardar y publicar</button>
         <div class="adm-sep"></div>
         <p class="adm-hint" style="color:var(--gray-2)">🗑️ Si las imágenes no se guardan, el almacenamiento puede estar lleno. Esto borra todas las fotos pero mantiene productos y configuración.</p>
         <button class="btn-adm-cancel" style="width:100%;margin-top:4px" onclick="clearAllImages()">Limpiar todas las fotos guardadas</button>

@@ -690,6 +690,7 @@ function fillAdminConfig() {
   s('cfgTt',  data.tiktok    || '');
   s('cfgPin', data.pin       || '');
   s('cfgWaMsg', data.waMsgTemplate || DEFAULTS.waMsgTemplate);
+  s('cfgGhToken', localStorage.getItem('okumo_gh_token') || '');
 }
 
 function saveConfig() {
@@ -716,6 +717,8 @@ function saveConfig() {
   if (g('cfgPin').length === 4) data.pin = g('cfgPin');
   const waMsg = document.getElementById('cfgWaMsg')?.value || '';
   if (waMsg.trim()) data.waMsgTemplate = waMsg;
+  const ghToken = (document.getElementById('cfgGhToken')?.value || '').trim();
+  if (ghToken) localStorage.setItem('okumo_gh_token', ghToken);
   saveData(); applyData();
   const fb = document.getElementById('configFeedback');
   if (fb) { fb.classList.remove('hidden'); setTimeout(()=>fb.classList.add('hidden'), 2500); }
@@ -853,7 +856,10 @@ function saveProduct() {
   const disp   = document.getElementById('fDisp')?.checked ?? true;
   if (editId) {
     const idx = data.products.findIndex(p=>p.id===editId);
-    if(idx!==-1) data.products[idx] = { ...data.products[idx], nombre, desc, precio, cat, img:g('fImg'), badge:g('fBadge'), disp };
+    if(idx!==-1) {
+      const existingImg = data.products[idx].img || localStorage.getItem('okumo_img_p'+editId) || '';
+      data.products[idx] = { ...data.products[idx], nombre, desc, precio, cat, img:existingImg, badge:g('fBadge'), disp };
+    }
   } else {
     const maxId = data.products.reduce((m,p)=>Math.max(m,p.id),0);
     data.products.push({ id:maxId+1, nombre, desc, precio, cat, img:g('fImg'), badge:g('fBadge'), disp });
@@ -861,6 +867,46 @@ function saveProduct() {
   saveData(); cancelEdit(); renderAdminProducts(); renderProducts(); renderFilterButtons();
   const fb = document.getElementById('productFeedback');
   if(fb){ fb.classList.remove('hidden'); setTimeout(()=>fb.classList.add('hidden'),2500); }
+}
+
+/* ── PUBLICAR EN GITHUB ── */
+async function publishToGitHub() {
+  const token = localStorage.getItem('okumo_gh_token') || '';
+  if (!token) {
+    showToast('⚠️ Primero configurá tu token de GitHub en el panel → Configuración.', '#e74c3c');
+    return;
+  }
+  const btn = document.getElementById('btnPublish');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Publicando...'; }
+  try {
+    const exportData = {
+      ...data,
+      heroImages: [0,1,2,3].map(i => localStorage.getItem('okumo_img_h'+i) || ''),
+      brandImage: localStorage.getItem('okumo_img_brand') || '',
+      logoImage:  localStorage.getItem('okumo_img_logo')  || '',
+      products:   data.products.map(p => ({ ...p, img: localStorage.getItem('okumo_img_p'+p.id) || p.img || '' }))
+    };
+    const jsContent = '/* OKUMO Datos — ' + new Date().toLocaleDateString('es-AR') + ' */\nwindow.OKUMO_BAKED = ' + JSON.stringify(exportData) + ';';
+    const apiUrl = 'https://api.github.com/repos/okumooba-beep/Okumo/contents/js/data.js';
+    const headers = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+    let sha = null;
+    const getResp = await fetch(apiUrl, { headers });
+    if (getResp.ok) { const fd = await getResp.json(); sha = fd.sha; }
+    const encoded = btoa(unescape(encodeURIComponent(jsContent)));
+    const body = { message: 'Actualizar datos OKUMO', content: encoded };
+    if (sha) body.sha = sha;
+    const putResp = await fetch(apiUrl, { method: 'PUT', headers, body: JSON.stringify(body) });
+    if (putResp.ok) {
+      showToast('✅ ¡Publicado! El sitio se actualiza en 1-2 minutos.', 'rgba(0,184,148,0.95)');
+    } else {
+      const err = await putResp.json();
+      throw new Error(err.message || 'Error al publicar');
+    }
+  } catch(e) {
+    showToast('⚠️ Error: ' + e.message, '#e74c3c');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '🚀 Guardar y publicar'; }
+  }
 }
 
 /* ── EXPORTAR PARA NETLIFY ── */
