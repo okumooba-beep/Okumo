@@ -6,6 +6,6 @@ window.OKUMO_LINKS_BAKED = {
   "menu": "https://okumooba-beep.github.io/Okumo/",
   "instagram": "https://www.instagram.com/okumo.ar/",
   "rappi": "https://www.rappi.com.ar/restaurantes/delivery/99951-okumo?utm_source=app&utm_medium=deeplink&utm_campaign=share",
-  "pedidosya": "Okumo en PedidosYa! https://www.pedidosya.com.ar/restaurantes/buenos-aires/okumo-2c91a023-90e5-4904-a7e7-5ee8b9745174-menu",
+  "pedidosya": "https://www.pedidosya.com.ar/restaurantes/buenos-aires/okumo-2c91a023-90e5-4904-a7e7-5ee8b9745174-menu",
   "ml": ""
 };
