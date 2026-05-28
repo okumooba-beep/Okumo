@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OKUMO · Links</title>
+  <script src="js/links-data.js" onerror="void(0)"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+
+    body{
+      background:#080808;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      font-family:'Montserrat',sans-serif;
+      padding:2.5rem 1.5rem;
+      position:relative;
+      overflow-x:hidden;
+    }
+
+    body::before{
+      content:'';
+      position:fixed;
+      top:-50%;left:50%;
+      transform:translateX(-50%);
+      width:600px;height:600px;
+      background:radial-gradient(circle,rgba(232,93,4,.07) 0%,transparent 70%);
+      pointer-events:none;z-index:0;
+    }
+
+    .container{
+      position:relative;z-index:1;
+      width:100%;max-width:420px;
+      display:flex;flex-direction:column;align-items:center;
+    }
+
+    /* LOGO */
+    .logo-section{
+      text-align:center;margin-bottom:1.5rem;
+      cursor:pointer;user-select:none;
+      -webkit-tap-highlight-color:transparent;
+    }
+    #logo-img{
+      width:150px;height:auto;
+      margin-bottom:.5rem;
+      filter:drop-shadow(0 0 20px rgba(232,93,4,.4));
+      display:none;
+    }
+    #logo-text{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:3.5rem;color:#E85D04;
+      letter-spacing:6px;line-height:1;
+      text-shadow:0 0 30px rgba(232,93,4,.3);
+    }
+    #tagline{
+      font-size:.7rem;color:#555;
+      letter-spacing:3px;text-transform:uppercase;margin-top:.5rem;
+    }
+
+    .divider{
+      width:50px;height:1px;
+      background:linear-gradient(90deg,transparent,#E85D04,transparent);
+      margin:1.5rem auto;
+    }
+    .subtitle{color:#444;font-size:.78rem;text-align:center;margin-bottom:2rem;letter-spacing:1px;}
+
+    /* BOTONES */
+    .buttons{width:100%;display:flex;flex-direction:column;gap:.85rem;}
+
+    .btn{
+      display:flex;align-items:center;justify-content:flex-start;
+      gap:1rem;padding:1rem 1.4rem;border-radius:14px;
+      text-decoration:none;font-family:'Montserrat',sans-serif;
+      font-weight:600;font-size:.92rem;letter-spacing:.3px;
+      transition:transform .18s ease,box-shadow .18s ease;
+      position:relative;
+    }
+    .btn::after{content:'›';position:absolute;right:1.2rem;font-size:1.4rem;opacity:.5;}
+    .btn:active{transform:scale(.97);}
+    @media(hover:hover){.btn:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(0,0,0,.35);}}
+    .btn-icon{font-size:1.25rem;flex-shrink:0;width:28px;text-align:center;}
+    .btn-text{flex:1;}
+
+    .btn-whatsapp{
+      background:#111;color:#25D366;
+      border:1px solid rgba(37,211,102,.25);
+      animation:pulse-green 2.5s infinite;
+    }
+    @keyframes pulse-green{
+      0%{box-shadow:0 0 0 0 rgba(37,211,102,.2);}
+      70%{box-shadow:0 0 0 8px rgba(37,211,102,0);}
+      100%{box-shadow:0 0 0 0 rgba(37,211,102,0);}
+    }
+    .btn-menu{background:#E85D04;color:#fff;box-shadow:0 4px 20px rgba(232,93,4,.25);}
+    .btn-instagram{
+      background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
+      color:#fff;
+    }
+    .btn-rappi{background:#111;color:#FF441F;border:1px solid rgba(255,68,31,.25);}
+    .btn-pedidosya{background:#111;color:#FA0050;border:1px solid rgba(250,0,80,.25);}
+
+    .btn-ml{
+      background:#111;color:#888;
+      border:1px solid #222;
+      cursor:default;opacity:.5;
+    }
+    .btn-ml::after{display:none;}
+    .btn-ml.active{color:#FFE500;border-color:rgba(255,229,0,.25);opacity:1;cursor:pointer;}
+    .btn-ml.active::after{display:block;}
+
+    .badge-soon{
+      position:absolute;right:1rem;
+      background:#1e1e1e;color:#444;
+      font-size:.6rem;font-weight:700;
+      letter-spacing:1px;padding:.2rem .5rem;
+      border-radius:20px;text-transform:uppercase;
+    }
+
+    .footer{margin-top:2.5rem;color:#2a2a2a;font-size:.65rem;text-align:center;letter-spacing:1.5px;text-transform:uppercase;}
+
+    /* ===== LOGIN PIN ===== */
+    .pin-overlay{
+      display:none;position:fixed;inset:0;
+      background:rgba(0,0,0,.95);z-index:300;
+      align-items:center;justify-content:center;
+      backdrop-filter:blur(6px);
+    }
+    .pin-overlay.active{display:flex;}
+    .pin-box{
+      background:#111;border:1px solid #E85D04;
+      border-radius:20px;padding:2rem 1.5rem;
+      width:100%;max-width:320px;text-align:center;
+      box-shadow:0 0 40px rgba(232,93,4,.2);
+    }
+    .pin-title{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:#E85D04;letter-spacing:3px;margin-bottom:.3rem;}
+    .pin-sub{color:#444;font-size:.75rem;margin-bottom:1.5rem;letter-spacing:.5px;}
+    .pin-digits{display:flex;gap:.75rem;justify-content:center;margin-bottom:1.2rem;}
+    .pin-digit{
+      width:52px;height:58px;background:#1a1a1a;
+      border:1px solid #2a2a2a;border-radius:12px;
+      color:#fff;font-size:1.4rem;font-weight:700;
+      text-align:center;outline:none;
+      transition:border-color .2s;
+    }
+    .pin-digit:focus{border-color:#E85D04;}
+    .pin-digit.error{border-color:#e74c3c;animation:shake .3s ease;}
+    @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}75%{transform:translateX(4px);}};
+    .pin-error{color:#e74c3c;font-size:.75rem;margin-top:.5rem;display:none;}
+    .pin-error.show{display:block;}
+    .btn-pin-cancel{
+      margin-top:.75rem;background:transparent;
+      border:none;color:#333;font-family:'Montserrat',sans-serif;
+      font-size:.75rem;cursor:pointer;
+      transition:color .2s;padding:.5rem;
+    }
+    .btn-pin-cancel:hover{color:#666;}
+
+    /* ===== PANEL ADMIN ===== */
+    .admin-overlay{
+      display:none;position:fixed;inset:0;
+      background:rgba(0,0,0,.95);z-index:200;
+      align-items:flex-start;justify-content:center;
+      padding:1rem;overflow-y:auto;
+      backdrop-filter:blur(4px);
+    }
+    .admin-overlay.active{display:flex;}
+    .admin-panel{
+      background:#111;border:1px solid #E85D04;
+      border-radius:18px;padding:1.5rem;
+      width:100%;max-width:420px;
+      margin:auto;
+      box-shadow:0 0 40px rgba(232,93,4,.15);
+    }
+    .admin-panel::-webkit-scrollbar{width:4px;}
+    .admin-panel::-webkit-scrollbar-thumb{background:#E85D04;border-radius:2px;}
+
+    .admin-header{
+      display:flex;align-items:center;
+      justify-content:space-between;margin-bottom:1.5rem;
+    }
+    .admin-title{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:#E85D04;letter-spacing:3px;}
+    .btn-close-admin{
+      background:transparent;border:1px solid #2a2a2a;
+      border-radius:8px;color:#555;
+      font-size:1rem;width:34px;height:34px;
+      cursor:pointer;transition:color .2s,border-color .2s;
+    }
+    .btn-close-admin:hover{color:#aaa;border-color:#555;}
+
+    /* Tabs */
+    .admin-tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;}
+    .tab-btn{
+      flex:1;padding:.55rem .5rem;border-radius:10px;
+      background:#1a1a1a;border:1px solid #222;
+      color:#555;font-family:'Montserrat',sans-serif;
+      font-size:.72rem;font-weight:600;letter-spacing:.5px;
+      cursor:pointer;transition:all .2s;text-transform:uppercase;
+    }
+    .tab-btn.active{background:#E85D04;color:#fff;border-color:#E85D04;}
+    .tab-content{display:none;}
+    .tab-content.active{display:block;}
+
+    .field-group{margin-bottom:1.1rem;}
+    .field-label{
+      display:block;color:#555;font-size:.68rem;
+      font-weight:700;letter-spacing:1.5px;
+      text-transform:uppercase;margin-bottom:.4rem;
+    }
+    .field-input{
+      width:100%;background:#1a1a1a;
+      border:1px solid #222;border-radius:10px;
+      color:#ddd;font-family:'Montserrat',sans-serif;
+      font-size:.85rem;padding:.65rem .9rem;
+      outline:none;transition:border-color .2s;
+    }
+    .field-input:focus{border-color:#E85D04;}
+    .field-input::placeholder{color:#2e2e2e;}
+
+    .sep{height:1px;background:#1a1a1a;margin:1.2rem 0;}
+
+    /* Logo upload */
+    .logo-upload-wrap{
+      border:1px dashed #252525;border-radius:12px;
+      padding:1.2rem;text-align:center;
+      cursor:pointer;transition:border-color .2s;
+      position:relative;
+    }
+    .logo-upload-wrap:hover{border-color:#E85D04;}
+    .logo-upload-wrap input[type=file]{
+      position:absolute;inset:0;opacity:0;
+      cursor:pointer;width:100%;height:100%;
+    }
+    #logo-preview-admin{
+      width:90px;height:auto;
+      display:none;margin:0 auto .5rem;
+    }
+    .upload-hint{color:#333;font-size:.75rem;}
+    .upload-hint b{color:#E85D04;}
+
+    /* Acciones */
+    .admin-actions{display:flex;gap:.75rem;margin-top:1.5rem;}
+    .btn-publish{
+      flex:1;background:#E85D04;color:#fff;
+      border:none;padding:.9rem;border-radius:12px;
+      font-family:'Montserrat',sans-serif;font-weight:700;
+      font-size:.9rem;cursor:pointer;
+      transition:opacity .2s;letter-spacing:.3px;
+    }
+    .btn-publish:hover{opacity:.9;}
+    .btn-publish:disabled{opacity:.5;cursor:not-allowed;}
+    .btn-admin-cancel{
+      flex:1;background:#1a1a1a;color:#555;
+      border:1px solid #222;padding:.9rem;
+      border-radius:12px;font-family:'Montserrat',sans-serif;
+      font-weight:600;font-size:.9rem;cursor:pointer;transition:color .2s;
+    }
+    .btn-admin-cancel:hover{color:#aaa;}
+    .btn-local-save{
+      width:100%;background:transparent;
+      border:1px solid #222;color:#444;
+      padding:.7rem;border-radius:12px;
+      font-family:'Montserrat',sans-serif;
+      font-size:.78rem;cursor:pointer;
+      margin-top:.6rem;transition:all .2s;
+    }
+    .btn-local-save:hover{border-color:#555;color:#888;}
+    .btn-reset-all{
+      width:100%;background:transparent;border:none;
+      color:#2a2a2a;font-family:'Montserrat',sans-serif;
+      font-size:.68rem;cursor:pointer;padding:.4rem;
+      margin-top:.4rem;transition:color .2s;
+    }
+    .btn-reset-all:hover{color:#555;}
+
+    /* Toast */
+    .toast{
+      position:fixed;bottom:2rem;left:50%;
+      transform:translateX(-50%) translateY(100px);
+      background:rgba(20,20,20,.97);color:#fff;
+      padding:.8rem 1.5rem;border-radius:50px;
+      font-size:.82rem;font-weight:600;z-index:400;
+      transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+      white-space:nowrap;border:1px solid #333;
+      box-shadow:0 4px 20px rgba(0,0,0,.5);
+    }
+    .toast.show{transform:translateX(-50%) translateY(0);}
+  </style>
+</head>
+<body>
+
+<!-- PÁGINA PRINCIPAL -->
+<div class="container">
+  <div class="logo-section" id="logo-area" onclick="handleLogoClick()">
+    <img id="logo-img" src="" alt="OKUMO">
+    <div id="logo-text">🔥 OKUMO</div>
+    <div id="tagline">Sabor Real · El sabor que te persigue</div>
+  </div>
+  <div class="divider"></div>
+  <p class="subtitle">📍 Villa Crespo, CABA · Dark Kitchen · Delivery</p>
+
+  <div class="buttons">
+    <a id="btn-whatsapp" href="#" class="btn btn-whatsapp" target="_blank">
+      <span class="btn-icon">💬</span><span class="btn-text">Pedí por WhatsApp</span>
+    </a>
+    <a id="btn-menu" href="https://okumooba-beep.github.io/Okumo/" class="btn btn-menu" target="_blank">
+      <span class="btn-icon">🍽️</span><span class="btn-text">Ver Menú Completo</span>
+    </a>
+    <a id="btn-instagram" href="https://instagram.com/okumo.saborreal" class="btn btn-instagram" target="_blank">
+      <span class="btn-icon">📸</span><span class="btn-text">Seguinos en Instagram</span>
+    </a>
+    <a id="btn-rappi" href="#" class="btn btn-rappi" target="_blank">
+      <span class="btn-icon">🛵</span><span class="btn-text">Pedir en Rappi</span>
+    </a>
+    <a id="btn-pedidosya" href="#" class="btn btn-pedidosya" target="_blank">
+      <span class="btn-icon">⚡</span><span class="btn-text">Pedir en Pedidos Ya</span>
+    </a>
+    <a id="btn-ml" href="#" class="btn btn-ml" onclick="return false;">
+      <span class="btn-icon">🛒</span><span class="btn-text">Mercado Libre Food</span>
+      <span class="badge-soon" id="badge-ml">Próximamente</span>
+    </a>
+  </div>
+
+  <div class="footer"><p>© 2026 OKUMO · Villa Crespo</p></div>
+</div>
+
+<!-- LOGIN PIN -->
+<div class="pin-overlay" id="pin-overlay">
+  <div class="pin-box">
+    <div class="pin-title">ADMIN</div>
+    <div class="pin-sub">Ingresá tu PIN de 4 dígitos</div>
+    <div class="pin-digits">
+      <input class="pin-digit" id="p0" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]">
+      <input class="pin-digit" id="p1" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]">
+      <input class="pin-digit" id="p2" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]">
+      <input class="pin-digit" id="p3" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]">
+    </div>
+    <div class="pin-error" id="pin-error">PIN incorrecto. Intentá de nuevo.</div>
+    <button class="btn-pin-cancel" onclick="closePinOverlay()">Cancelar</button>
+  </div>
+</div>
+
+<!-- PANEL ADMIN -->
+<div class="admin-overlay" id="admin-overlay">
+  <div class="admin-panel">
+    <div class="admin-header">
+      <div class="admin-title">CONFIGURACIÓN</div>
+      <button class="btn-close-admin" onclick="closeAdmin()">✕</button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="admin-tabs">
+      <button class="tab-btn active" onclick="switchTab('apariencia',this)">Apariencia</button>
+      <button class="tab-btn" onclick="switchTab('links',this)">Links</button>
+      <button class="tab-btn" onclick="switchTab('github',this)">GitHub</button>
+    </div>
+
+    <!-- Tab: Apariencia -->
+    <div class="tab-content active" id="tab-apariencia">
+      <div class="field-group">
+        <label class="field-label">Logo (PNG transparente recomendado)</label>
+        <div class="logo-upload-wrap">
+          <input type="file" id="logo-file" accept="image/*" onchange="handleLogoFile(this)">
+          <img id="logo-preview-admin" src="" alt="">
+          <div class="upload-hint"><b>Tocá para subir tu logo</b><br>PNG con fondo transparente</div>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Texto debajo del logo</label>
+        <input class="field-input" id="inp-tagline" type="text" placeholder="Sabor Real · El sabor que te persigue">
+      </div>
+    </div>
+
+    <!-- Tab: Links -->
+    <div class="tab-content" id="tab-links">
+      <div class="field-group">
+        <label class="field-label">💬 Número de WhatsApp</label>
+        <input class="field-input" id="inp-whatsapp" type="text" placeholder="5491167891234 (sin + ni espacios)">
+      </div>
+      <div class="sep"></div>
+      <div class="field-group">
+        <label class="field-label">🍽️ Link del Menú</label>
+        <input class="field-input" id="inp-menu" type="text" placeholder="https://...">
+      </div>
+      <div class="field-group">
+        <label class="field-label">📸 Link de Instagram</label>
+        <input class="field-input" id="inp-instagram" type="text" placeholder="https://instagram.com/okumo.saborreal">
+      </div>
+      <div class="sep"></div>
+      <div class="field-group">
+        <label class="field-label">🛵 Link de Rappi</label>
+        <input class="field-input" id="inp-rappi" type="text" placeholder="https://rappi.com.ar/...">
+      </div>
+      <div class="field-group">
+        <label class="field-label">⚡ Link de Pedidos Ya</label>
+        <input class="field-input" id="inp-pedidosya" type="text" placeholder="https://pedidosya.com.ar/...">
+      </div>
+      <div class="field-group">
+        <label class="field-label">🛒 Mercado Libre Food <span style="color:#333;font-size:.65rem;">(déjalo vacío hasta activar)</span></label>
+        <input class="field-input" id="inp-ml" type="text" placeholder="https://... (se activa al guardar)">
+      </div>
+      <div class="sep"></div>
+      <div class="field-group">
+        <label class="field-label">🔑 Cambiar PIN de administrador</label>
+        <input class="field-input" id="inp-pin" type="password" inputmode="numeric" maxlength="4" placeholder="Nuevo PIN de 4 dígitos">
+      </div>
+    </div>
+
+    <!-- Tab: GitHub -->
+    <div class="tab-content" id="tab-github">
+      <div class="field-group">
+        <label class="field-label">🔐 Token de GitHub</label>
+        <input class="field-input" id="inp-token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxx">
+        <p style="color:#333;font-size:.68rem;margin-top:.4rem;line-height:1.5;">
+          Mismo token que usás en el menú. Se guarda localmente en este navegador.
+        </p>
+      </div>
+    </div>
+
+    <!-- Acciones -->
+    <div class="admin-actions">
+      <button class="btn-admin-cancel" onclick="closeAdmin()">Cancelar</button>
+      <button class="btn-publish" id="btn-publish" onclick="publishToGitHub()">🚀 Guardar y publicar</button>
+    </div>
+    <button class="btn-local-save" onclick="saveLocal()">💾 Guardar solo en este dispositivo</button>
+    <button class="btn-reset-all" onclick="resetAll()">Borrar toda la configuración</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ==============================
+// DATOS EN MEMORIA
+// ==============================
+const D = {
+  tagline:'',logo:'',whatsapp:'',menu:'',
+  instagram:'',rappi:'',pedidosya:'',ml:'',pin:'1234',token:''
+};
+
+// ==============================
+// ARRANQUE
+// ==============================
+(function init(){
+  // 1. Intentar cargar datos baked desde GitHub (links-data.js)
+  if(window.OKUMO_LINKS_BAKED){
+    Object.assign(D, window.OKUMO_LINKS_BAKED);
+  }
+  // 2. LocalStorage tiene prioridad (ediciones locales recientes)
+  const stored = localStorage.getItem('okumo_links_data');
+  if(stored){ try{ Object.assign(D, JSON.parse(stored)); }catch(e){} }
+  // Token siempre de localStorage
+  D.token = localStorage.getItem('okumo_links_token') || localStorage.getItem('okumo_gh_token') || '';
+
+  applyData();
+})();
+
+function applyData(){
+  if(D.logo){ showLogoImg(D.logo); }
+  if(D.tagline){ document.getElementById('tagline').textContent = D.tagline; }
+  if(D.whatsapp){ document.getElementById('btn-whatsapp').href = 'https://wa.me/'+D.whatsapp.replace(/\D/g,''); }
+  if(D.menu){ document.getElementById('btn-menu').href = D.menu; }
+  if(D.instagram){ document.getElementById('btn-instagram').href = D.instagram; }
+  if(D.rappi){ document.getElementById('btn-rappi').href = D.rappi; }
+  if(D.pedidosya){ document.getElementById('btn-pedidosya').href = D.pedidosya; }
+  if(D.ml){ activateML(D.ml); }
+}
+
+function showLogoImg(src){
+  const img = document.getElementById('logo-img');
+  const txt = document.getElementById('logo-text');
+  img.src = src; img.style.display='block'; txt.style.display='none';
+}
+
+function activateML(link){
+  const btn = document.getElementById('btn-ml');
+  btn.href = link;
+  btn.onclick = null;
+  btn.classList.add('active');
+  const badge = document.getElementById('badge-ml');
+  if(badge) badge.remove();
+}
+
+// ==============================
+// 4 CLICS PARA ABRIR ADMIN
+// ==============================
+let _clicks=0, _timer=null;
+function handleLogoClick(){
+  _clicks++;
+  if(_timer) clearTimeout(_timer);
+  _timer = setTimeout(()=>{ _clicks=0; }, 2500);
+  if(_clicks>=4){ _clicks=0; openPinOverlay(); }
+}
+
+// ==============================
+// PIN
+// ==============================
+function openPinOverlay(){
+  document.querySelectorAll('.pin-digit').forEach(d=>d.value='');
+  document.getElementById('pin-error').classList.remove('show');
+  document.getElementById('pin-overlay').classList.add('active');
+  setTimeout(()=>document.getElementById('p0').focus(), 100);
+}
+function closePinOverlay(){ document.getElementById('pin-overlay').classList.remove('active'); }
+
+// Auto-avance entre dígitos
+document.querySelectorAll('.pin-digit').forEach((el,i,all)=>{
+  el.addEventListener('input',()=>{
+    if(el.value.length===1 && i<3) all[i+1].focus();
+    if(i===3) checkPin();
+  });
+  el.addEventListener('keydown',e=>{
+    if(e.key==='Backspace' && !el.value && i>0) all[i-1].focus();
+  });
+});
+
+function getPinValue(){ return ['p0','p1','p2','p3'].map(id=>document.getElementById(id).value).join(''); }
+
+function checkPin(){
+  const entered = getPinValue();
+  const correct = D.pin || '1234';
+  if(entered === correct){
+    closePinOverlay();
+    openAdmin();
+  } else {
+    document.querySelectorAll('.pin-digit').forEach(d=>{
+      d.classList.add('error');
+      setTimeout(()=>d.classList.remove('error'),500);
+      d.value='';
+    });
+    document.getElementById('pin-error').classList.add('show');
+    document.getElementById('p0').focus();
+  }
+}
+
+// ==============================
+// ADMIN PANEL
+// ==============================
+function openAdmin(){
+  // Pre-cargar inputs con datos actuales
+  document.getElementById('inp-tagline').value   = D.tagline   || '';
+  document.getElementById('inp-whatsapp').value  = D.whatsapp  || '';
+  document.getElementById('inp-menu').value      = D.menu      || '';
+  document.getElementById('inp-instagram').value = D.instagram || '';
+  document.getElementById('inp-rappi').value     = D.rappi     || '';
+  document.getElementById('inp-pedidosya').value = D.pedidosya || '';
+  document.getElementById('inp-ml').value        = D.ml        || '';
+  document.getElementById('inp-pin').value       = '';
+  document.getElementById('inp-token').value     = D.token     || '';
+  const adm = document.getElementById('logo-preview-admin');
+  if(D.logo){ adm.src=D.logo; adm.style.display='block'; }
+  document.getElementById('admin-overlay').classList.add('active');
+  switchTab('apariencia', document.querySelector('.tab-btn'));
+}
+
+function closeAdmin(){ document.getElementById('admin-overlay').classList.remove('active'); }
+
+// Cerrar tocando fuera
+document.getElementById('admin-overlay').addEventListener('click',function(e){
+  if(e.target===this) closeAdmin();
+});
+
+function switchTab(name, btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ==============================
+// LOGO UPLOAD
+// ==============================
+function handleLogoFile(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const src = e.target.result;
+    const adm = document.getElementById('logo-preview-admin');
+    adm.src = src; adm.style.display='block';
+    D.logo = src;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ==============================
+// RECOLECTAR INPUTS
+// ==============================
+function collectInputs(){
+  const tag = document.getElementById('inp-tagline').value.trim();
+  const wa  = document.getElementById('inp-whatsapp').value.trim();
+  const men = document.getElementById('inp-menu').value.trim();
+  const ig  = document.getElementById('inp-instagram').value.trim();
+  const rap = document.getElementById('inp-rappi').value.trim();
+  const pya = document.getElementById('inp-pedidosya').value.trim();
+  const ml  = document.getElementById('inp-ml').value.trim();
+  const pin = document.getElementById('inp-pin').value.trim();
+  const tok = document.getElementById('inp-token').value.trim();
+
+  if(tag) D.tagline   = tag;
+  if(wa)  D.whatsapp  = wa;
+  if(men) D.menu      = men;
+  if(ig)  D.instagram = ig;
+  if(rap) D.rappi     = rap;
+  if(pya) D.pedidosya = pya;
+  if(ml)  D.ml        = ml;
+  if(pin && pin.length===4) D.pin = pin;
+  if(tok) D.token     = tok;
+}
+
+// ==============================
+// GUARDAR LOCAL
+// ==============================
+function saveLocal(){
+  collectInputs();
+  const save = {...D}; delete save.token;
+  localStorage.setItem('okumo_links_data', JSON.stringify(save));
+  if(D.token) localStorage.setItem('okumo_links_token', D.token);
+  applyData();
+  closeAdmin();
+  showToast('💾 Guardado en este dispositivo');
+}
+
+// ==============================
+// PUBLICAR EN GITHUB
+// ==============================
+async function publishToGitHub(){
+  collectInputs();
+  const token = D.token || localStorage.getItem('okumo_gh_token') || '';
+  if(!token){
+    switchTab('github', document.querySelectorAll('.tab-btn')[2]);
+    showToast('⚠️ Ingresá tu token de GitHub en la pestaña GitHub','#e74c3c');
+    return;
+  }
+
+  const btn = document.getElementById('btn-publish');
+  btn.disabled=true; btn.textContent='⏳ Publicando...';
+
+  // Guardar local también
+  const save = {...D}; delete save.token;
+  localStorage.setItem('okumo_links_data', JSON.stringify(save));
+  localStorage.setItem('okumo_links_token', token);
+
+  // Construir el JS a publicar
+  const exportData = {...D}; delete exportData.token; delete exportData.pin;
+  const jsContent = '/* OKUMO Links — '+new Date().toLocaleDateString('es-AR')+' */\nwindow.OKUMO_LINKS_BAKED = '+JSON.stringify(exportData,null,2)+';';
+
+  const apiUrl   = 'https://api.github.com/repos/okumooba-beep/Okumo/contents/js/links-data.js';
+  const headers  = {
+    'Authorization':'token '+token,
+    'Accept':'application/vnd.github.v3+json',
+    'Content-Type':'application/json'
+  };
+
+  try{
+    // Obtener SHA si ya existe
+    let sha = null;
+    const getResp = await fetch(apiUrl,{headers});
+    if(getResp.ok){ const fd=await getResp.json(); sha=fd.sha; }
+
+    const encoded = btoa(unescape(encodeURIComponent(jsContent)));
+    const body = {message:'Actualizar links OKUMO', content:encoded};
+    if(sha) body.sha = sha;
+
+    const putResp = await fetch(apiUrl,{method:'PUT',headers,body:JSON.stringify(body)});
+    if(putResp.ok){
+      applyData();
+      closeAdmin();
+      showToast('✅ ¡Publicado! El sitio se actualiza en 1-2 minutos.');
+    } else {
+      const err = await putResp.json();
+      throw new Error(err.message || 'Error al publicar');
+    }
+  } catch(e){
+    showToast('⚠️ '+e.message,'#e74c3c');
+  } finally {
+    btn.disabled=false; btn.textContent='🚀 Guardar y publicar';
+  }
+}
+
+// ==============================
+// RESET
+// ==============================
+function resetAll(){
+  if(!confirm('¿Borrar toda la configuración guardada en este dispositivo?')) return;
+  localStorage.removeItem('okumo_links_data');
+  localStorage.removeItem('okumo_links_token');
+  location.reload();
+}
+
+// ==============================
+// TOAST
+// ==============================
+function showToast(msg, bg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.borderColor = bg || '#333';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
