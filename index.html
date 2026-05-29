@@ -250,9 +250,8 @@
   </div>
   <div class="cart-foot" id="cartFoot">
     <div class="cart-total-row"><span>Subtotal</span><strong id="cartTotal">$0</strong></div>
-    <button class="btn-wa-order" id="btnFinalize">
-      Continuar con el pedido →
-    </button>
+    <button class="btn-wa-order" id="btnFinalize">Continuar con el pedido →</button>
+    <button class="btn-keep-shopping" id="btnKeepShopping">← Seguir eligiendo</button>
     <button class="btn-clear" id="btnClear">Vaciar carrito</button>
   </div>
 </aside>
@@ -324,9 +323,10 @@
       <div class="ck-summary-title">Resumen</div>
       <div class="ck-summary-items" id="ckSummaryItems"></div>
       <div class="ck-summary-row" id="ckDeliveryRow">
-        <span>Costo de envío</span>
+        <span>Envío <span style="font-size:.72rem;color:var(--gray-2)">(aprox. · vía Uber Eats)</span></span>
         <span id="ckDeliveryCostVal"></span>
       </div>
+      <div id="ckDeliveryNote" style="font-size:.72rem;color:var(--gray-2);padding:4px 0 2px;display:none">El costo exacto lo confirma Uber Eats según tu dirección.</div>
       <div class="ck-summary-total">
         <span>Total</span>
         <strong id="ckGrandTotal">$0</strong>

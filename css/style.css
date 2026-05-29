@@ -538,6 +538,13 @@ body.edit-mode .hero-eyebrow { cursor: pointer; }
 .cart-total-row strong { font-size:1.3rem; color:var(--orange); }
 .btn-wa-order { display:flex;align-items:center;justify-content:center;gap:8px;padding:16px;border-radius:8px;background:#25D366;color:white;font-size:.88rem;font-weight:700;transition:all .2s; }
 .btn-wa-order:hover { background:#1ebe5c; transform:translateY(-1px); }
+.btn-keep-shopping {
+  padding:11px;border-radius:8px;
+  background:transparent;border:1px solid var(--border-2);
+  color:var(--white);font-size:.84rem;font-weight:600;
+  transition:all .2s;width:100%;
+}
+.btn-keep-shopping:hover { border-color:var(--orange);color:var(--orange); }
 .btn-clear { padding:10px;border-radius:8px;background:transparent;border:1px solid var(--border);color:var(--gray);font-size:.78rem;transition:all .2s; }
 .btn-clear:hover { border-color:#e74c3c; color:#e74c3c; }
 

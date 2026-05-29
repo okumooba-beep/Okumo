@@ -473,6 +473,9 @@ function renderCheckoutSummary() {
   const costEl = document.getElementById('ckDeliveryCostVal');
   if (costEl) costEl.textContent = cost > 0 ? fmt(cost) : 'A confirmar';
 
+  const noteEl = document.getElementById('ckDeliveryNote');
+  if (noteEl) noteEl.style.display = (orderType === 'delivery' && cost === 0) ? 'block' : 'none';
+
   const totalEl = document.getElementById('ckGrandTotal');
   if (totalEl) totalEl.textContent = fmt(total);
 }
@@ -1119,6 +1122,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('ckBack')?.addEventListener('click', closeCheckout);
   document.getElementById('ckClose')?.addEventListener('click', () => { closeCheckout(); closeCart(); });
   document.getElementById('btnConfirmOrder')?.addEventListener('click', confirmOrder);
+
+  /* Seguir eligiendo */
+  document.getElementById('btnKeepShopping')?.addEventListener('click', closeCart);
 
   /* Products grid delegation */
   document.getElementById('productsGrid')?.addEventListener('click', e => {
