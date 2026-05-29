@@ -16,6 +16,7 @@ const DEFAULTS = {
   instagram:   'okumo.ar',
   tiktok:      'okumo.saborreal',
   pin:         '1234',
+  deliveryCost: 2500,
   waMsgTemplate: '🔥 *PEDIDO OKUMO — SABOR REAL* 🔥\n\n📋 *Detalle:*\n\n{items}\n💰 *Total estimado: {total} ARS*\n\n📍 Indicá tu dirección y te confirmamos. ¡Gracias!',
   stats: { v1:"4.9★", l1:"Rating", v2:"+500", l2:"Pedidos", v3:"30'", l3:"Entrega" },
   categories: [
@@ -54,6 +55,7 @@ let tapCount      = 0;
 let tapTimer      = null;
 let editMode      = false;
 let pendingTarget = null;
+let orderType     = 'delivery';
 
 /* ── DATA PERSISTENCE ── */
 function migrateStorage() {
@@ -417,14 +419,110 @@ function animateCartBtn() {
 function openCart()  { document.getElementById('cartPanel')?.classList.add('open'); document.getElementById('cartOverlay')?.classList.add('show'); document.body.style.overflow='hidden'; }
 function closeCart() { document.getElementById('cartPanel')?.classList.remove('open'); document.getElementById('cartOverlay')?.classList.remove('show'); document.body.style.overflow=''; }
 
-/* ── WHATSAPP ORDER ── */
-function finalizeOrder() {
+/* ── CHECKOUT ── */
+function openCheckout() {
   if (!cart.length) return;
-  let items = '';
-  cart.forEach(i => { items += `• ${i.nombre} ×${i.qty} — ${fmt(i.precio * i.qty)}\n`; });
-  const tpl = (data.waMsgTemplate || DEFAULTS.waMsgTemplate);
-  const msg = tpl.replace('{items}', items).replace('{total}', fmt(cartTotal()));
+  setOrderType(orderType);
+  renderCheckoutSummary();
+  document.getElementById('checkoutPanel')?.classList.add('open');
+}
+
+function closeCheckout() {
+  document.getElementById('checkoutPanel')?.classList.remove('open');
+}
+
+function setOrderType(type) {
+  orderType = type;
+  document.getElementById('ckBtnDelivery')?.classList.toggle('active', type === 'delivery');
+  document.getElementById('ckBtnPickup')?.classList.toggle('active', type === 'pickup');
+
+  const addrSection  = document.getElementById('ckAddressSection');
+  const deliveryRow  = document.getElementById('ckDeliveryRow');
+  const cashOption   = document.getElementById('ckCashOption');
+
+  if (addrSection)  addrSection.style.display  = type === 'delivery' ? 'block' : 'none';
+  if (deliveryRow)  deliveryRow.style.display   = type === 'delivery' ? 'flex'  : 'none';
+  if (cashOption)   cashOption.style.display    = type === 'delivery' ? 'none'  : 'block';
+
+  if (type === 'delivery') {
+    const cashRadio = document.querySelector('input[name="ckPay"][value="efectivo"]');
+    if (cashRadio?.checked) {
+      const transRadio = document.querySelector('input[name="ckPay"][value="transferencia"]');
+      if (transRadio) transRadio.checked = true;
+    }
+  }
+
+  renderCheckoutSummary();
+}
+
+function renderCheckoutSummary() {
+  const subtotal     = cartTotal();
+  const cost         = Number(data.deliveryCost ?? DEFAULTS.deliveryCost ?? 2500);
+  const deliveryCost = orderType === 'delivery' ? cost : 0;
+  const total        = subtotal + deliveryCost;
+
+  const items = document.getElementById('ckSummaryItems');
+  if (items) {
+    items.innerHTML = cart.map(i => `
+      <div class="ck-summary-item">
+        <span>${i.nombre} <small style="color:var(--gray-2)">×${i.qty}</small></span>
+        <span>${fmt(i.precio * i.qty)}</span>
+      </div>`).join('');
+  }
+
+  const costEl = document.getElementById('ckDeliveryCostVal');
+  if (costEl) costEl.textContent = cost > 0 ? fmt(cost) : 'A confirmar';
+
+  const totalEl = document.getElementById('ckGrandTotal');
+  if (totalEl) totalEl.textContent = fmt(total);
+}
+
+function confirmOrder() {
+  const name     = (document.getElementById('ckName')?.value   || '').trim();
+  const phone    = (document.getElementById('ckPhone')?.value  || '').trim();
+  const street   = (document.getElementById('ckStreet')?.value || '').trim();
+  const apt      = (document.getElementById('ckApt')?.value    || '').trim();
+  const comments = (document.getElementById('ckComments')?.value || '').trim();
+  const pay      = document.querySelector('input[name="ckPay"]:checked')?.value || 'transferencia';
+
+  if (!name)  { showToast('Ingresá tu nombre para continuar.', '#e74c3c'); document.getElementById('ckName')?.focus();   return; }
+  if (!phone) { showToast('Ingresá tu teléfono para continuar.', '#e74c3c'); document.getElementById('ckPhone')?.focus(); return; }
+  if (orderType === 'delivery' && !street) { showToast('Ingresá tu dirección para continuar.', '#e74c3c'); document.getElementById('ckStreet')?.focus(); return; }
+
+  const subtotal     = cartTotal();
+  const cost         = Number(data.deliveryCost ?? DEFAULTS.deliveryCost ?? 2500);
+  const deliveryCost = orderType === 'delivery' ? cost : 0;
+  const total        = subtotal + deliveryCost;
+
+  let msg = '🔥 *NUEVO PEDIDO — OKUMO* 🔥\n\n';
+
+  if (orderType === 'delivery') {
+    msg += `📦 *MODALIDAD:* Delivery 🛵\n`;
+    msg += `📍 *DIRECCIÓN:* ${street}${apt ? ', ' + apt : ''}\n`;
+  } else {
+    msg += `📦 *MODALIDAD:* Para retirar 🏪\n`;
+  }
+
+  msg += `👤 *NOMBRE:* ${name}\n`;
+  msg += `📱 *TELÉFONO:* ${phone}\n`;
+  msg += `💳 *FORMA DE PAGO:* ${pay === 'efectivo' ? 'Efectivo' : 'Transferencia'}\n\n`;
+
+  msg += `📋 *DETALLE DEL PEDIDO:*\n`;
+  cart.forEach(i => { msg += `• ${i.nombre} ×${i.qty} — ${fmt(i.precio * i.qty)} ARS\n`; });
+
+  msg += `\n💰 Subtotal: ${fmt(subtotal)} ARS`;
+  if (orderType === 'delivery') {
+    msg += `\n🛵 Envío: ${cost > 0 ? fmt(cost) + ' ARS' : 'a confirmar'}`;
+  }
+  msg += `\n💵 *TOTAL: ${fmt(total)} ARS*`;
+
+  if (comments) msg += `\n\n💬 *Comentarios:* ${comments}`;
+
+  msg += '\n\n¡Gracias por tu pedido! Te confirmamos en breve 🙏';
+
   window.open(waLink(msg), '_blank');
+  closeCheckout();
+  closeCart();
 }
 
 /* ── EDIT MODE ── */
@@ -685,9 +783,10 @@ function fillAdminConfig() {
   s('cfgStat1Val', st.v1); s('cfgStat1Lbl', st.l1);
   s('cfgStat2Val', st.v2); s('cfgStat2Lbl', st.l2);
   s('cfgStat3Val', st.v3); s('cfgStat3Lbl', st.l3);
-  s('cfgWa',  data.whatsapp  || '');
-  s('cfgIg',  data.instagram || '');
-  s('cfgTt',  data.tiktok    || '');
+  s('cfgWa',           data.whatsapp    || '');
+  s('cfgDeliveryCost', data.deliveryCost ?? DEFAULTS.deliveryCost ?? 2500);
+  s('cfgIg',           data.instagram   || '');
+  s('cfgTt',           data.tiktok      || '');
   s('cfgPin', data.pin       || '');
   s('cfgWaMsg', data.waMsgTemplate || DEFAULTS.waMsgTemplate);
   s('cfgGhToken', localStorage.getItem('okumo_gh_token') || '');
@@ -710,7 +809,9 @@ function saveConfig() {
   if (g('cfgStat2Lbl')) data.stats.l2 = g('cfgStat2Lbl');
   if (g('cfgStat3Val')) data.stats.v3 = g('cfgStat3Val');
   if (g('cfgStat3Lbl')) data.stats.l3 = g('cfgStat3Lbl');
-  data.whatsapp  = (g('cfgWa') || data.whatsapp).replace(/\D/g,'');
+  data.whatsapp    = (g('cfgWa') || data.whatsapp).replace(/\D/g,'');
+  const rawDc = g('cfgDeliveryCost');
+  if (rawDc !== '') data.deliveryCost = Math.max(0, parseInt(rawDc, 10) || 0);
   const rawIg    = g('cfgIg') || data.instagram;
   data.instagram = rawIg.replace(/^https?:\/\/(www\.)?instagram\.com\//,'').replace(/\/$/,'');
   data.tiktok    = (g('cfgTt') || data.tiktok).replace(/^@/,'');
@@ -1010,9 +1111,14 @@ document.addEventListener('DOMContentLoaded', () => {
   /* Cart */
   document.getElementById('cartToggle')?.addEventListener('click', openCart);
   document.getElementById('cartClose')?.addEventListener('click', closeCart);
-  document.getElementById('cartOverlay')?.addEventListener('click', closeCart);
-  document.getElementById('btnFinalize')?.addEventListener('click', finalizeOrder);
+  document.getElementById('cartOverlay')?.addEventListener('click', () => { closeCheckout(); closeCart(); });
+  document.getElementById('btnFinalize')?.addEventListener('click', openCheckout);
   document.getElementById('btnClear')?.addEventListener('click', clearCart);
+
+  /* Checkout */
+  document.getElementById('ckBack')?.addEventListener('click', closeCheckout);
+  document.getElementById('ckClose')?.addEventListener('click', () => { closeCheckout(); closeCart(); });
+  document.getElementById('btnConfirmOrder')?.addEventListener('click', confirmOrder);
 
   /* Products grid delegation */
   document.getElementById('productsGrid')?.addEventListener('click', e => {

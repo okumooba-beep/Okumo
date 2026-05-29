@@ -249,12 +249,96 @@
     <div class="cart-items" id="cartItems"></div>
   </div>
   <div class="cart-foot" id="cartFoot">
-    <div class="cart-total-row"><span>Total estimado</span><strong id="cartTotal">$0</strong></div>
+    <div class="cart-total-row"><span>Subtotal</span><strong id="cartTotal">$0</strong></div>
     <button class="btn-wa-order" id="btnFinalize">
-      <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-      Finalizar por WhatsApp
+      Continuar con el pedido →
     </button>
     <button class="btn-clear" id="btnClear">Vaciar carrito</button>
+  </div>
+</aside>
+
+<!-- ═══════════════ CHECKOUT PANEL ═══════════════ -->
+<aside class="checkout-panel" id="checkoutPanel">
+  <div class="cart-head">
+    <button class="ck-back-btn" id="ckBack">← Volver</button>
+    <h3>Completar pedido</h3>
+    <button class="close-btn" id="ckClose">✕</button>
+  </div>
+  <div class="ck-body">
+
+    <!-- Toggle Delivery / Para retirar -->
+    <div class="ck-toggle-wrap">
+      <button class="ck-toggle-btn active" id="ckBtnDelivery" onclick="setOrderType('delivery')">🛵 Delivery</button>
+      <button class="ck-toggle-btn" id="ckBtnPickup" onclick="setOrderType('pickup')">🏪 Para retirar</button>
+    </div>
+
+    <!-- Dirección (solo delivery) -->
+    <div class="ck-section" id="ckAddressSection">
+      <div class="ck-section-title">Dirección de entrega</div>
+      <input type="text" class="ck-input" id="ckStreet" placeholder="Calle y número *" autocomplete="street-address">
+      <input type="text" class="ck-input" id="ckApt" placeholder="Piso y departamento (opcional)">
+    </div>
+
+    <!-- Tus datos -->
+    <div class="ck-section">
+      <div class="ck-section-title">Tus datos</div>
+      <input type="text" class="ck-input" id="ckName" placeholder="Nombre y apellido *" autocomplete="name">
+      <input type="tel" class="ck-input" id="ckPhone" placeholder="Teléfono (WhatsApp) *" autocomplete="tel">
+    </div>
+
+    <!-- Comentarios -->
+    <div class="ck-section">
+      <div class="ck-section-title">Comentarios</div>
+      <textarea class="ck-input ck-textarea" id="ckComments" placeholder="Aclaraciones, alergias, preferencias..."></textarea>
+    </div>
+
+    <!-- Forma de pago -->
+    <div class="ck-section">
+      <div class="ck-section-title">Forma de pago</div>
+      <div class="ck-pay-options">
+        <label class="ck-pay-opt">
+          <input type="radio" name="ckPay" value="transferencia" checked>
+          <div class="ck-pay-card">
+            <span class="ck-pay-icon">🏦</span>
+            <div>
+              <div class="ck-pay-name">Transferencia</div>
+              <div class="ck-pay-sub">Bancaria / Mercado Pago</div>
+            </div>
+          </div>
+        </label>
+        <label class="ck-pay-opt" id="ckCashOption">
+          <input type="radio" name="ckPay" value="efectivo">
+          <div class="ck-pay-card">
+            <span class="ck-pay-icon">💵</span>
+            <div>
+              <div class="ck-pay-name">Efectivo</div>
+              <div class="ck-pay-sub">Al retirar en el local</div>
+            </div>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Resumen del pedido -->
+    <div class="ck-summary">
+      <div class="ck-summary-title">Resumen</div>
+      <div class="ck-summary-items" id="ckSummaryItems"></div>
+      <div class="ck-summary-row" id="ckDeliveryRow">
+        <span>Costo de envío</span>
+        <span id="ckDeliveryCostVal"></span>
+      </div>
+      <div class="ck-summary-total">
+        <span>Total</span>
+        <strong id="ckGrandTotal">$0</strong>
+      </div>
+    </div>
+
+  </div>
+  <div class="ck-foot">
+    <button class="btn-wa-order ck-confirm-btn" id="btnConfirmOrder">
+      <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Confirmar pedido por WhatsApp
+    </button>
   </div>
 </aside>
 
@@ -312,6 +396,8 @@
         <div class="adm-sep"></div>
         <label>WhatsApp (código país + número, sin +)</label>
         <input type="text" id="cfgWa" placeholder="5491112345678">
+        <label>Costo de envío delivery (ARS, 0 = "a confirmar")</label>
+        <input type="number" id="cfgDeliveryCost" placeholder="2500" min="0">
         <label>Instagram (sin @)</label>
         <input type="text" id="cfgIg" placeholder="okumo.saborreal">
         <label>TikTok (sin @)</label>
